@@ -8,13 +8,15 @@ This tutorial outlines the steps to setup Azure Sentinel (SIEM) and connect it t
 
 <h2>Environments and Technologies Used</h2>
 
-- Microsoft Azure (Virtual Machines/Compute)
-- Remote Desktop
-- Internet Information Services (IIS)
-
-<h2>Operating Systems Used </h2>
-
-- Windows 10</b> (21H2)
+- Microsoft Sentinel
+- Microsoft Defender for Cloud
+- Log Analytics Workspace (LAW)
+- KQL (Kusto Query Language)
+- Windows PowerShell ISE
+- Remote Desktop Protocol (RDP)
+- API (Application Programming Interface)
+- Microsoft Azure (including resources like Virtual Machines)
+- Windows 10 (as an environment for testing or connecting via RDP)
 
 <h2>Technical Steps</h2>
 
@@ -112,7 +114,7 @@ This tutorial outlines the steps to setup Azure Sentinel (SIEM) and connect it t
 </p>
 <p>
 9.) Open Windows Powershell ISE and run a script that runs perpetuality. Essentially looking through the event log that we were looking at earlier and logs all the failed events to login into the "honeypot" VM, recording IP addresses, longitude, latitude, etc. Once this data starts to be collected, it creates a new log file. (C:\Windows\Programdata\failed_RDP.log). Whenever there’s a failed log on in the event viewer we will see a purple output (look at image of Windows Powershell ISE). Basically what’s happening is it looks through these failed logs, send them to created log file. We're going to use this to train our Log Analytics Workspace.
-P.S. ipgeolocation.io which offers FREE IP lookup API and accurate IP location finder is what I used in the perpetual script to look up the IP addresses that are connected to our failed log events.
+P.S. ipgeolocation.io which offers FREE IP lookup API and accurate IP location finder is what I used in the perpetual script to look up the IP addresses that are connected to our failed log events.You will need to createe your own account on ipgeolocation.io to get your own API key to run in the command script.
 </p>
 <br />
 
@@ -121,7 +123,7 @@ P.S. ipgeolocation.io which offers FREE IP lookup API and accurate IP location f
 ![image](https://github.com/user-attachments/assets/588c0ef8-a0a8-4179-a325-55a626839d6f) ![image](https://github.com/user-attachments/assets/40da8023-fc58-43f6-a87c-7740d6c8af74) ![image](https://github.com/user-attachments/assets/5c862de3-c630-47ca-9b95-886168456c9a)
 </p>
 <p>
-10.) Create custom log in LAW to bring in our custom log.
+10.) Create custom log in LAW to bring in our custom log file from the honeypot VM. Open the honeypot VM and simply open the logfile that was previously created (failed_rdp.log) -> copy and paste the contents of said file onto a new file on your personal desktop -> save it under the same name(failed_rdp.log) -> define a collection path (C:\programdata\fail_rdp.log) -> review & create custom log
 </p>
 <br />
 
@@ -130,7 +132,9 @@ P.S. ipgeolocation.io which offers FREE IP lookup API and accurate IP location f
 ![image](https://github.com/user-attachments/assets/81a6db96-a931-4763-9482-092d9dd3ddf8) ![image](https://github.com/user-attachments/assets/0118f0f9-c9a1-41f7-aa12-302e99a6b5c8)
 </p>
 <p>
-11.) 
+11.) Create custom columns/ fields. These are the columns/ fields that will define the data we will observe and analyze. 
+
+  Open LAW -> select "Tables" -> find the custom log/ table we just created and click the 3 dots to the far right -> Select "Edit Schema" -> create custom columns/ fields accordingly.
 </p>
 <br />
 
@@ -139,7 +143,7 @@ P.S. ipgeolocation.io which offers FREE IP lookup API and accurate IP location f
 ![image](https://github.com/user-attachments/assets/9e7dc04b-80a1-413c-91d1-5187dcc5acb4)
 </p>
 <p>
-12.) 
+12.) Now, from within LAW naviagte to logs and run the query command that is in the photo above. This command will extract the raw data from the custom log file that we connected to our LAW and present the data in the results undernearth the query. Be sure to go back to the honeypot VM and compare the event logs to the results from the query command to ensure accuarcy.
 </p>
 <br />
 
@@ -150,7 +154,7 @@ P.S. ipgeolocation.io which offers FREE IP lookup API and accurate IP location f
 
 </p>
 <p>
-13.) 
+13.)To setup ther map in Sentinel, navigate to Sentinel and select the honeypot LAW -> under "Threat Manageement" select "Workbooks" then "Create" -> Select "Edit" -> Select "Add" -> Select "Add query". From there you can enter the query command in the abpove image to extract the failed_rdp.log data and present it on the map and craete your map settings accordingly.
 </p>
 <br />
 
@@ -159,6 +163,6 @@ P.S. ipgeolocation.io which offers FREE IP lookup API and accurate IP location f
 ![image](https://github.com/user-attachments/assets/6d0f29ca-360e-456e-aa3b-0277da90893c)
 </p>
 <p>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+14.) Observe live RDP brute force attacks from all over the world.
 </p>
 <br />
